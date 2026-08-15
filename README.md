@@ -2,10 +2,9 @@
 
 Text hygiene and revision for plain text and LaTeX.
 
-Two tools that compose. `unicode_hygiene.py` normalizes any text file — it strips
-invisible and format characters, and folds typographic punctuation to source form when
-asked. `revise_paper.py` layers a LaTeX manuscript revision pipeline on top of it, running
-one command and writing one new file. Neither modifies the source.
+Two tools that compose. `unicode_hygiene.py` normalizes any text file. `revise_paper.py`
+layers a LaTeX manuscript revision pipeline on top of it, running one command and writing
+one new file. Neither modifies the source.
 
 ```sh
 cat notes.txt | python3 unicode_hygiene.py clean   # any text
@@ -258,32 +257,29 @@ three argument parsers.
 
 # unicode_hygiene
 
-A fail-closed Unicode hygiene tool for plain-text and LaTeX manuscripts. Used as stages 0
-and 4 above, and usable on its own.
+A fail-closed Unicode hygiene tool for plain text and LaTeX manuscripts. It runs as
+stages 0 and 4 above, and works on its own.
 
 AI-assisted drafting, web copy-paste, and round-trips through word processors leave
 invisible and zero-information format characters in source files. In `.tex` they
 survive into camera-ready submissions, where they cause compile warnings, PDF/A
-validation failures, and silent glyph problems. This tool removes them, and
-optionally normalizes typographic punctuation and accented letters to their LaTeX
-source forms.
+validation failures, and silent glyph problems. This tool strips them, and folds
+typographic punctuation and accented letters to their LaTeX source forms when asked.
 
-**What this is.** A text-hygiene tool. It normalizes text: it strips invisible and
-format characters, and folds typographic characters to source form when asked.
-
-**What this is not.** It does not detect, identify, or score watermarks, and it
+**What it does not do.** It does not detect, identify, or score watermarks, and it
 makes no claim to defeat one. It has no network access and no telemetry. It
 handles plain text and LaTeX only, and never rewrites or paraphrases prose.
 
-**What follows from the normalization.** Bucket 1 strips the invisible-character
-surface unconditionally — zero-width characters, bidi controls, the Unicode TAG
-block, the variation selectors — because those characters cause compile warnings
-and PDF/A validation failures. Anything encoded in those codepoints goes with
-them, whatever it was put there for. The tool does not look for such an encoding,
-cannot tell you whether one was present, and reports only the characters it
-removed. What it does not touch: substitutions that use visible characters, such
-as Cyrillic а for Latin a, and anything carried in word choice rather than in
-bytes.
+> **Warning.** If a file carries a watermark or provenance marker encoded in
+> invisible characters, `clean` will break or weaken it. Bucket 1 clears the whole
+> invisible-character surface: zero-width characters, bidi controls, the Unicode
+> TAG block, the variation selectors. Anything encoded in those codepoints goes
+> with them, whatever it was put there for. Run `inspect` first if you need to see
+> what a file contains before you change it. `inspect` never writes.
+
+The tool does not look for such an encoding and cannot tell you whether one was
+present. It reports the characters it removed, nothing more. Visible substitutions
+survive, such as Cyrillic а for Latin a, and so does anything carried in word choice.
 
 ### Install
 
@@ -331,8 +327,8 @@ Multiple files are a batch; each file succeeds or is refused independently, and 
 refusal does not abort the rest. `-o` takes a single input; batch runs write in
 place with a `.bak` unless `--no-backup`.
 
-**Exit codes.** `0` — every file was cleaned or was already clean. `1` — at least
-one file was refused by a guard. `2` — an unexpected error or a bad invocation.
+**Exit codes.** `0`: every file was cleaned or was already clean. `1`: at least
+one file was refused by a guard. `2`: an unexpected error or a bad invocation.
 Refusal and unexpected error are distinct code paths, not just distinct numbers.
 
 Refusals print as `refused <file>: <guard> at line <N>: <detail>`.
@@ -348,7 +344,7 @@ line.**
 This is structural, not a matter of discipline. `process_file()` runs:
 
 1. read the input read-only into memory;
-2. compute the entire cleaned result and change report in memory, as an *edit list* —
+2. compute the entire cleaned result and change report in memory, as an *edit list*, so
    the transform never builds an output string itself;
 3. `apply_edits()`, the single place an output string is constructed;
 4. run every guard against the in-memory result;
@@ -361,28 +357,28 @@ not a traceback over a half-written file. The original is never opened for writi
 
 #### Guards (not toggleable, all fail-closed)
 
-**Protected-region lexer.** A state machine — not a full LaTeX parser — that tracks
+**Protected-region lexer.** A state machine, not a full LaTeX parser, that tracks
 which regions the cursor is in so no edit is ever made inside one: inline verbatim
 (`\verb`, `\verb*`, `\lstinline`, `\mintinline`, any delimiter), the verbatim
 environment family, and every form of math mode. Comments are tracked too, but as a
-weaker gate — see "deliberate choices". Escaped specials (`\%`,
+weaker gate (see "deliberate choices"). Escaped specials (`\%`,
 `\$`, `\{`, …) are literals and never open or close a region. If the lexer reaches a
-state it cannot resolve — an unterminated `\verb`, unbalanced `\begin`/`\end`, an
-unterminated math region — it **refuses the file** rather than guessing.
+state it cannot resolve, such as an unterminated `\verb`, unbalanced `\begin`/`\end`,
+or an unterminated math region, it **refuses the file** rather than guessing.
 
 **Output re-lex.** The cleaned result is lexed again, and the protected-region
 structure must be identical to the input's: same regions, same nesting depth, same
 byte content. An edit that changed how the document lexes is a corruption signal.
 
 **Change-exactness.** The output is reconstructed from the *serialized change
-report* — the same `line`/`col`/`before`/`after` rows you and `--json` see — and must
+report*, the same `line`/`col`/`before`/`after` rows you and `--json` see, and must
 equal the actual output byte for byte. Reconstructing from the report rather than
 from the internal edit objects is deliberate: replaying the objects the applier
 already consumed would prove nothing. Any bug in the transform, the logger, or the
 column arithmetic surfaces as a refusal instead of a silent unintended edit.
 
 **Encoding.** Input is decoded strictly as UTF-8, falling back to a BOM-declared
-encoding. Never `errors='replace'` or `errors='ignore'` — forcing a decode can
+encoding. Never `errors='replace'` or `errors='ignore'`, since forcing a decode can
 itself corrupt. Use `--encoding NAME` to override.
 
 **Write safety.** Temp file + `fsync` + atomic `os.replace`. A symlink destination
@@ -392,7 +388,7 @@ is refused. The original is opened read-only.
 
 Each `--force-*` flag prints exactly which safety it waives, and all are off by
 default. A refused file is therefore always recoverable by a user who has inspected
-it — a false refusal never permanently blocks anyone.
+it, so a false refusal never permanently blocks anyone.
 
 | Flag | Waives |
 |---|---|
@@ -416,8 +412,8 @@ selector blocks. These are enumerated explicitly rather than derived from Unicod
 general categories, which both over- and under-select for this task.
 
 ZWNJ (U+200C) and ZWJ (U+200D) are **context-gated**, because they are required in
-some scripts and in emoji sequences. One is stripped only when neither neighbour
-— skipping other invisible characters in between — is Arabic, Indic, or pictographic.
+some scripts and in emoji sequences. One is stripped only when neither neighbour,
+skipping other invisible characters in between, is Arabic, Indic, or pictographic.
 When adjacency is ambiguous, such as at a protected-region boundary, the joiner is
 **preserved**. That is the safe direction.
 
@@ -462,15 +458,15 @@ plain text and **never** run on `.tex`, where whitespace is semantic.
 
 ### Compile-verify
 
-For a standalone `.tex` document — one containing `\documentclass` with no unresolved
-`\input`/`\include` before it — that was actually edited, both the original and the
+For a standalone `.tex` document (one containing `\documentclass` with no unresolved
+`\input`/`\include` before it) that was edited, both the original and the
 cleaned version are compiled in a scratch directory, from the file's own directory so
 relative `\input`, graphics, and `.bib` paths resolve. If the original compiled and
 the cleaned version does not, **the change is refused.** If the original did not
 compile either, that is reported and not held against the edit.
 
 Fragments and subfiles legitimately do not compile alone and are never refused for
-it — compile-verify is skipped for them entirely. Unedited files skip compilation, and
+it, so compile-verify is skipped for them entirely. Unedited files skip compilation, and
 the "before" outcome is cached. `--no-compile-verify` force-skips; `--compile-verify`
 force-attempts on a file heuristically judged a fragment.
 
@@ -528,7 +524,7 @@ nothing on disk changed; the counts still describe everything present.
 
 | | |
 |---|---|
-| `unicode_hygiene.py` | the tool — everything, standard library only |
+| `unicode_hygiene.py` | the whole tool, standard library only |
 | `test_unicode_hygiene.py` | the test suite (85 tests) |
 | `DESIGN.md` | module layout and the lexer state model |
 
