@@ -7,7 +7,7 @@
 
 Two tools that compose. `unicode_hygiene.py` normalizes any text file. `revise_paper.py`
 layers a LaTeX manuscript revision pipeline on top of it, running one command and writing
-one new file. Neither modifies the source.
+one new file. Neither modifies the source. It cleans the source file, may endup breaking AI watermarking, but focuses more on making reading of content easy and follow through!
 
 ```sh
 cat notes.txt | python3 unicode_hygiene.py clean   # any text
