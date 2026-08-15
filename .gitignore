@@ -1,0 +1,15 @@
+# OpenAI API key. Never commit: this repo is public.
+conf
+
+# Authoring spec, not part of the distribution.
+prompt
+
+# Backups written by `unicode_hygiene.py clean`.
+*.bak
+
+# Pipeline output. Regenerated from the source manuscript.
+*.final.tex
+
+__pycache__/
+*.py[cod]
+.DS_Store
