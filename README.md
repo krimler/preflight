@@ -1,6 +1,9 @@
-# preflight
+<p align="center">
+  <img src="assets/preflight-banner.svg" width="100%"
+       alt="preflight — text hygiene and revision for plain text and LaTeX">
+</p>
 
-Text hygiene and revision for plain text and LaTeX.
+# preflight
 
 Two tools that compose. `unicode_hygiene.py` normalizes any text file. `revise_paper.py`
 layers a LaTeX manuscript revision pipeline on top of it, running one command and writing
@@ -270,8 +273,9 @@ typographic punctuation and accented letters to their LaTeX source forms when as
 makes no claim to defeat one. It has no network access and no telemetry. It
 handles plain text and LaTeX only, and never rewrites or paraphrases prose.
 
-> **Warning.** If a file carries a watermark or provenance marker encoded in
-> invisible characters, `clean` will break or weaken it. Bucket 1 clears the whole
+> [!WARNING]
+> If a file carries a watermark or provenance marker encoded in invisible
+> characters, `clean` will break or weaken it. Bucket 1 clears the whole
 > invisible-character surface: zero-width characters, bidi controls, the Unicode
 > TAG block, the variation selectors. Anything encoded in those codepoints goes
 > with them, whatever it was put there for. Run `inspect` first if you need to see

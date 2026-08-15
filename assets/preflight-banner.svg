@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="777" height="300" viewBox="0 0 777 300" role="img" aria-label="preflight — text hygiene and revision for plain text and LaTeX">
+  <title>preflight</title>
+  <defs>
+    <filter id="bloom" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3.4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <radialGradient id="vig" cx="50%" cy="50%" r="78%">
+      <stop offset="55%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity=".62"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="777" height="300" fill="#0B0906"/>
+
+  <g fill="#FFB000" filter="url(#bloom)">
+    <rect x="44" y="46" width="52" height="13"/>
+    <rect x="44" y="59" width="13" height="13"/>
+    <rect x="96" y="59" width="13" height="13"/>
+    <rect x="44" y="72" width="13" height="13"/>
+    <rect x="96" y="72" width="13" height="13"/>
+    <rect x="44" y="85" width="52" height="13"/>
+    <rect x="44" y="98" width="13" height="13"/>
+    <rect x="44" y="111" width="13" height="13"/>
+    <rect x="44" y="124" width="13" height="13"/>
+    <rect x="122" y="46" width="52" height="13"/>
+    <rect x="122" y="59" width="13" height="13"/>
+    <rect x="174" y="59" width="13" height="13"/>
+    <rect x="122" y="72" width="13" height="13"/>
+    <rect x="174" y="72" width="13" height="13"/>
+    <rect x="122" y="85" width="52" height="13"/>
+    <rect x="122" y="98" width="13" height="13"/>
+    <rect x="161" y="98" width="13" height="13"/>
+    <rect x="122" y="111" width="13" height="13"/>
+    <rect x="174" y="111" width="13" height="13"/>
+    <rect x="122" y="124" width="13" height="13"/>
+    <rect x="174" y="124" width="13" height="13"/>
+    <rect x="200" y="46" width="65" height="13"/>
+    <rect x="200" y="59" width="13" height="13"/>
+    <rect x="200" y="72" width="13" height="13"/>
+    <rect x="200" y="85" width="52" height="13"/>
+    <rect x="200" y="98" width="13" height="13"/>
+    <rect x="200" y="111" width="13" height="13"/>
+    <rect x="200" y="124" width="65" height="13"/>
+    <rect x="278" y="46" width="65" height="13"/>
+    <rect x="278" y="59" width="13" height="13"/>
+    <rect x="278" y="72" width="13" height="13"/>
+    <rect x="278" y="85" width="52" height="13"/>
+    <rect x="278" y="98" width="13" height="13"/>
+    <rect x="278" y="111" width="13" height="13"/>
+    <rect x="278" y="124" width="13" height="13"/>
+    <rect x="356" y="46" width="13" height="13"/>
+    <rect x="356" y="59" width="13" height="13"/>
+    <rect x="356" y="72" width="13" height="13"/>
+    <rect x="356" y="85" width="13" height="13"/>
+    <rect x="356" y="98" width="13" height="13"/>
+    <rect x="356" y="111" width="13" height="13"/>
+    <rect x="356" y="124" width="65" height="13"/>
+    <rect x="434" y="46" width="65" height="13"/>
+    <rect x="460" y="59" width="13" height="13"/>
+    <rect x="460" y="72" width="13" height="13"/>
+    <rect x="460" y="85" width="13" height="13"/>
+    <rect x="460" y="98" width="13" height="13"/>
+    <rect x="460" y="111" width="13" height="13"/>
+    <rect x="434" y="124" width="65" height="13"/>
+    <rect x="525" y="46" width="39" height="13"/>
+    <rect x="512" y="59" width="13" height="13"/>
+    <rect x="564" y="59" width="13" height="13"/>
+    <rect x="512" y="72" width="13" height="13"/>
+    <rect x="512" y="85" width="13" height="13"/>
+    <rect x="551" y="85" width="26" height="13"/>
+    <rect x="512" y="98" width="13" height="13"/>
+    <rect x="564" y="98" width="13" height="13"/>
+    <rect x="512" y="111" width="13" height="13"/>
+    <rect x="564" y="111" width="13" height="13"/>
+    <rect x="525" y="124" width="39" height="13"/>
+    <rect x="590" y="46" width="13" height="13"/>
+    <rect x="642" y="46" width="13" height="13"/>
+    <rect x="590" y="59" width="13" height="13"/>
+    <rect x="642" y="59" width="13" height="13"/>
+    <rect x="590" y="72" width="13" height="13"/>
+    <rect x="642" y="72" width="13" height="13"/>
+    <rect x="590" y="85" width="65" height="13"/>
+    <rect x="590" y="98" width="13" height="13"/>
+    <rect x="642" y="98" width="13" height="13"/>
+    <rect x="590" y="111" width="13" height="13"/>
+    <rect x="642" y="111" width="13" height="13"/>
+    <rect x="590" y="124" width="13" height="13"/>
+    <rect x="642" y="124" width="13" height="13"/>
+    <rect x="668" y="46" width="65" height="13"/>
+    <rect x="694" y="59" width="13" height="13"/>
+    <rect x="694" y="72" width="13" height="13"/>
+    <rect x="694" y="85" width="13" height="13"/>
+    <rect x="694" y="98" width="13" height="13"/>
+    <rect x="694" y="111" width="13" height="13"/>
+    <rect x="694" y="124" width="13" height="13"/>
+  </g>
+
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'DejaVu Sans Mono',monospace">
+    <text x="44" y="189" fill="#FFB000" font-size="20" filter="url(#bloom)">Text hygiene and revision for plain text and LaTeX.</text>
+    <text x="44" y="229" fill="#7E571A" font-size="13" letter-spacing="2.6">APACHE-2.0 · PYTHON 3.10+ · STDLIB ONLY · 89 TESTS</text>
+    <text x="44" y="266" fill="#7E571A" font-size="13" letter-spacing="1.4">$ python3 unicode_hygiene.py inspect paper.tex</text>
+    <rect x="492" y="253" width="9" height="17" fill="#FFB000"/>
+  </g>
+
+  <g fill="#000" opacity=".26"><rect x="0" y="0" width="777" height="19"/><rect x="0" y="39" width="777" height="19"/><rect x="0" y="78" width="777" height="19"/><rect x="0" y="117" width="777" height="19"/><rect x="0" y="156" width="777" height="19"/><rect x="0" y="195" width="777" height="19"/><rect x="0" y="234" width="777" height="19"/><rect x="0" y="273" width="777" height="19"/></g>
+  <rect width="777" height="300" fill="url(#vig)"/>
+</svg>
