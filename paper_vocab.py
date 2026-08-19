@@ -7668,6 +7668,18 @@ def _openai_api_key():
     return None
 
 
+def _reraise_if_bug(exc):
+    """Let a defect in this file through a broad `except`, and swallow nothing else.
+
+    The LLM handlers below catch broadly so one bad batch cannot abort a whole run. That
+    is right for a timeout or a malformed response and wrong for a typo: an undefined
+    prompt constant raised NameError on every faithfulness batch, so both sentence stages
+    dropped every rewrite they had accepted and the run still reported success.
+    """
+    if isinstance(exc, (NameError, AttributeError)):
+        raise exc
+
+
 def get_llm_candidates(word, context=None, model=DEFAULT_LLM_MODEL, n=10):
     """Ask an OpenAI model for replacement wordings. Returns {term: reason}.
 
@@ -7712,6 +7724,7 @@ def get_llm_candidates(word, context=None, model=DEFAULT_LLM_MODEL, n=10):
         )
         data = json.loads(response.output_text)
     except Exception as e:
+        _reraise_if_bug(e)
         print(f"LLM call failed ({type(e).__name__}: {e}); falling back to WordNet only.",
               file=sys.stderr)
         return {}
@@ -8141,6 +8154,7 @@ def llm_screen_revisions(proposals, model=DEFAULT_LLM_MODEL, batch_size=60, goal
             )
             data = json.loads(response.output_text)
         except Exception as e:
+            _reraise_if_bug(e)
             print(f"  batch {begin // batch_size + 1} failed ({type(e).__name__}: {e}); "
                   "those sites are left unchanged.", file=sys.stderr)
             continue
@@ -8260,6 +8274,7 @@ def _rewrite_with_model(items, prompt, payload_for, gate, model, batch_size, lab
             )
             data = json.loads(response.output_text)
         except Exception as e:
+            _reraise_if_bug(e)
             print(f"  batch {begin // batch_size + 1} failed ({type(e).__name__}: {e}); "
                   "those sites are left unchanged.", file=sys.stderr)
             continue
@@ -8357,6 +8372,50 @@ def _gate_rewrite(rewrite, original, max_concepts, forbid_contrast=False, max_gr
     return None
 
 
+VERIFY_PROMPT = (
+    "You are checking whether a rewritten sentence from an academic paper still says what "
+    "the original said. Assume the rewrite is wrong and look for the change that proves "
+    "it. The rewrite has already passed mechanical checks, so the only failures left are "
+    "semantic ones, and a plausible-sounding rewrite that shifts the claim is exactly what "
+    "you are here to catch.\n"
+    "You are given `original`, the `rewrite` that replaces it, and `previous`, the "
+    "sentence before it in the paper. `previous` is context only: judge the rewrite "
+    "against `original` as it would be read after `previous`. A `~` stands for a citation, "
+    "an equation, or a formatting command that was removed before you saw it. Ignore what "
+    "a `~` might contain and never fail a rewrite over one; those spans are checked "
+    "mechanically elsewhere. A rewrite may be several sentences where the original was "
+    "one. That is intended and is not itself a problem.\n"
+    "SET faithful=false IF THE REWRITE:\n"
+    "1. REVERSES OR WEAKENS A NEGATION. This is the most common failure and the one that "
+    "matters most. 'Its three clauses are not [uniform]' rewritten as 'Its three clauses "
+    "express uniformity' asserts the opposite of the original. Treat every negation that "
+    "disappears as a reversal until you can point to the words in the rewrite that still "
+    "carry it. A negation whose subject comes from `previous` is the highest risk case.\n"
+    "2. DROPS OR HARDENS A QUALIFICATION. A hedge ('may', 'often', 'in principle', 'we "
+    "conjecture'), a scope limit ('for the models we tested', 'under this threat model'), "
+    "or an attribution ('prior work argues') that vanishes turns a bounded claim into a "
+    "general one. Turning 'suggests' into 'shows' or 'most' into 'all' fails.\n"
+    "3. ADDS A CLAIM, CAUSE, OR MECHANISM THE ORIGINAL DOES NOT MAKE, including a causal "
+    "link asserted where the original only reported co-occurrence.\n"
+    "4. CHANGES A NUMBER, UNIT, COMPARISON DIRECTION, OR QUANTIFIER.\n"
+    "5. REASSIGNS AN ACTOR OR OBJECT. Who does what to what must survive. Watch splits: "
+    "when one sentence becomes two, a pronoun or a shared subject often reattaches to the "
+    "wrong noun.\n"
+    "6. REDEFINES A TERM OF ART. Terms the paper defines or the field owns (provenance, "
+    "reliance, persona, MCP, LLM) must keep their exact sense; a plainer paraphrase that "
+    "narrows or widens them fails.\n"
+    "Plainer wording, shorter clauses, reordered clauses, and a split into several "
+    "sentences are all fine on their own. Judge meaning, never style, and never fail a "
+    "rewrite for being less elegant than the original.\n"
+    "FAIL ON DOUBT. If you cannot satisfy yourself that the two say the same thing, set "
+    "faithful=false. A rejected rewrite costs the author nothing, because the original "
+    "sentence stays in the paper. An accepted one that shifts the meaning reaches "
+    "reviewers as the author\'s own claim.\n"
+    "Return one entry per input id. `problem` names the specific change in one sentence, "
+    "quoting the words that differ; set it to the empty string when faithful is true."
+)
+
+
 def llm_verify_faithful(candidates, model=DEFAULT_LLM_MODEL, batch_size=10):
     """Second-pass check that each rewrite preserves meaning. Returns the surviving set.
 
@@ -8401,6 +8460,7 @@ def llm_verify_faithful(candidates, model=DEFAULT_LLM_MODEL, batch_size=10):
             )
             checks = json.loads(response.output_text).get("checks", [])
         except Exception as e:
+            _reraise_if_bug(e)
             print(f"  verification failed ({type(e).__name__}); dropping this batch to "
                   "be safe.", file=sys.stderr)
             continue
